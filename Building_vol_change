@@ -1,0 +1,45 @@
+In Google Earth Engine, create a geometry point feature and use the .buffer function to create your AOI. 
+
+//Make a buffer around a point to use it as an AOI
+var polygon = geometry.buffer(24000)
+
+// Load the building volume images
+var image_1975 = ee.Image('JRC/GHSL/P2023A/GHS_BUILT_V/1975');
+var image_2020 = ee.Image('JRC/GHSL/P2023A/GHS_BUILT_V/2020');
+
+// Select the built_volume_total band
+var volume_total_1975 = image_1975.select('built_volume_total');
+var volume_total_2020 = image_2020.select('built_volume_total');
+
+// Define the visualization parameters
+var visParams = {
+  min: 0,
+  max: 80000,
+  palette: ['000004', '51127c', 'b73779', 'fc8961', 'fcfdbf'],
+};
+
+// Calculate the total building volume within the polygon for 1975
+var totalVolume1975 = volume_total_1975.reduceRegion({
+  reducer: ee.Reducer.sum(),
+  geometry: polygon,
+  scale: 100,
+  maxPixels: 1e9
+});
+
+// Calculate the total building volume within the polygon for 2020
+var totalVolume2020 = volume_total_2020.reduceRegion({
+  reducer: ee.Reducer.sum(),
+  geometry: polygon,
+  scale: 100, 
+  maxPixels: 1e9
+});
+
+// Print the results to the console
+print('Total building volume in 1975 (m³):', totalVolume1975.get('built_volume_total'));
+print('Total building volume in 2020 (m³):', totalVolume2020.get('built_volume_total'));
+
+// Add the layers to the map
+
+Map.addLayer(volume_total_1975, visParams, 'Total building volume [m³], 1975');
+Map.addLayer(volume_total_2020, visParams, 'Total building volume [m³], 2020');
+Map.addLayer(polygon, {color: 'green'}, 'Polygon');
