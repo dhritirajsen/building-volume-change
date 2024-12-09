@@ -1,4 +1,5 @@
 In Google Earth Engine, create a geometry point feature and use the .buffer function to create your AOI. 
+LINK-->https://code.earthengine.google.com/74e43a063e4e9229dd3dab61981eb8f9 
 
 //Make a buffer around a point to use it as an AOI
 var polygon = geometry.buffer(24000)
